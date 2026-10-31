@@ -1,12 +1,22 @@
-name: Jalankan OpenCode
+name: Jalankan OpenCode Nemotron
 on: [push]
 
 jobs:
-  run-opencode:
+  run-nemotron:
     runs-on: ubuntu-latest
     steps:
+    
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Lihat Struktur File
-        run: ls -la
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install OpenCode CLI
+        run: npm install -g opencode-cli
+
+      - name: Run AI Review with Nemotron
+        run: |
+          opencode run --model "nvidia/nemotron-3-ultra-free" --message "Periksa seluruh file kode di repositori ini, cari potensi bug, dan berikan saran optimasi performa."

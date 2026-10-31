@@ -1,22 +1,37 @@
-name: Jalankan OpenCode Nemotron
-on: [push]
+name: Pusat Kendali OpenCode AI
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      pilihan_model:
+        description: 'Pilih model AI yang ingin Anda gunakan:'
+        required: true
+        default: 'nvidia/nemotron-3.5-lightning'
+        type: choice
+        options:
+          - 'nvidia/nemotron-3.5-lightning'
+          - 'ox-alpha'
+          - 'anthropic/claude-3-5-sonnet'
 
 jobs:
-  run-nemotron:
+  run-ai:
     runs-on: ubuntu-latest
     steps:
-    
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install OpenCode CLI
-        run: npm install -g opencode-cli
-
-      - name: Run AI Review with Nemotron
+      - name: Download & Install OpenCode Direct
         run: |
-          opencode run --model "nvidia/nemotron-3-ultra-free" --message "Periksa seluruh file kode di repositori ini, cari potensi bug, dan berikan saran optimasi performa."
+          curl -sSL https://githubusercontent.com | bash
+          # Memastikan perintah opencode bisa diakses secara global di server GitHub
+          echo "$HOME/.opencode/bin" >> $GITHUB_PATH
+
+      - name: Jalankan AI Pilihan
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          MODEL_TERPILIH="${{ github.event.inputs.pilihan_model || 'nvidia/nemotron-3.5-lightning' }}"
+          echo "Menjalankan OpenCode menggunakan model: $MODEL_TERPILIH"
+          
+          opencode run --model "$MODEL_TERPILIH" --message "Periksa seluruh file kode di repositori ini, cari potensi bug, dan berikan saran optimasi performa."

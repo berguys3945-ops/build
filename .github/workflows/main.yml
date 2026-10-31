@@ -1,0 +1,12 @@
+name: Jalankan OpenCode
+on: [push]
+jobs:
+  run-opencode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Install & Run OpenCode
+        run: |
+          npm install -g opencode-cli  # Sesuaikan dengan cara instalasi OpenCode Anda
+          opencode run                 # Sesuaikan dengan perintah yang biasa Anda gunakan di cmd
